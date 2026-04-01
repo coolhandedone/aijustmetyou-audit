@@ -1,7 +1,11 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #FAFAF8; color: #2C2C2A; -webkit-font-smoothing: antialiased; }
-body { min-height: 100dvh; }
+html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+body { min-height: 100dvh; background: #D8E8F1; color: #0A0A0A; }
 input, textarea, button { font-family: inherit; }
 button { cursor: pointer; }
-textarea { font-family: inherit; }
-::selection { background: #E1F5EE; }
+::selection { background: #A8CCE0; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #B0C4CF; border-radius: 3px; }

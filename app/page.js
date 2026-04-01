@@ -399,7 +399,7 @@ export default function AuditApp() {
                 }}>CLIENT NAME</label>
                 <input
                   value={clientName} onChange={e => setClientName(e.target.value)}
-                  placeholder="e.g. Vinny Matarazzo"
+                  placeholder="First and last name"
                   style={{
                     width: '100%', padding: '14px 16px', background: C.surface,
                     border: `1px solid ${C.surfaceBorder}`, fontSize: 15, outline: 'none',
@@ -414,7 +414,7 @@ export default function AuditApp() {
                 }}>BUSINESS NAME</label>
                 <input
                   value={businessName} onChange={e => setBusinessName(e.target.value)}
-                  placeholder="e.g. LaTerra Builders"
+                  placeholder="Your company name"
                   style={{
                     width: '100%', padding: '14px 16px', background: C.surface,
                     border: `1px solid ${C.surfaceBorder}`, fontSize: 15, outline: 'none',

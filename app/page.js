@@ -11,6 +11,14 @@ const SYSTEMS = [
   { key: 'run', name: 'Run', phase: '05', phaseName: 'OPERATIONS & ADMIN' },
 ];
 
+const INDUSTRIES = [
+  'Construction / Trades', 'Professional Services', 'Real Estate', 'Healthcare / Medical',
+  'Retail / E-commerce', 'Food & Hospitality', 'Technology / SaaS', 'Home Services',
+  'Creative / Agency', 'Manufacturing', 'Other',
+];
+
+const TEAM_SIZES = ['Just me', '2–5', '6–15', '16–50', '50+'];
+
 // ─── 15 Diagnostic Steps ────────────────────────────────────
 
 const STEPS = [
@@ -216,18 +224,73 @@ function getBiggestDropoff(answers) {
   return { dropFrom, dropTo, biggestDrop };
 }
 
-function generateTextSummary(answers, notes, clientName, businessName) {
+// Look up the answer text for a given system + lens
+function getAnswerText(answers, sysKey, lens) {
+  const level = answers[`${sysKey}-${lens}`];
+  if (!level) return null;
+  const step = STEPS.find(s => SYSTEMS[s.systemIdx].key === sysKey && s.lens === lens);
+  if (!step) return null;
+  const option = step.options.find(o => o.level === level);
+  return option ? option.text : null;
+}
+
+// Look up the GREEN (ideal) answer for a system + lens
+function getGreenText(sysKey, lens) {
+  const step = STEPS.find(s => SYSTEMS[s.systemIdx].key === sysKey && s.lens === lens);
+  if (!step) return null;
+  const option = step.options.find(o => o.level === 'green');
+  return option ? option.text : null;
+}
+
+// Build personalized recommendation
+function getRecommendation(worst, answers, industry, teamSize, mainService) {
+  if (!worst) return '';
+  const avg = getSystemAvg(answers, worst.key);
+  const worstLens = LENSES.reduce((a, b) =>
+    scoreValue(answers[`${worst.key}-${a}`] || 'green') < scoreValue(answers[`${worst.key}-${b}`] || 'green') ? a : b
+  );
+  const bizDesc = mainService
+    ? `a ${industry || 'business'} focused on ${mainService}`
+    : `a ${industry || 'business'} of your size`;
+  const sizeContext = teamSize === 'Just me'
+    ? "As a solo operator, you're likely the bottleneck in every system."
+    : teamSize === '2–5'
+    ? "With a small team, the owner is probably still involved in everything."
+    : teamSize === '6–15'
+    ? "At your team size, systems need to work without the owner in the room."
+    : teamSize === '16–50'
+    ? "With a team this size, undocumented processes create compounding inefficiency."
+    : "At scale, every broken system multiplies across the organization.";
+
+  let rec = `For ${bizDesc}, the highest-impact area to fix is ${worst.name}. `;
+  rec += sizeContext + ' ';
+
+  if (worstLens === 'process') {
+    rec += `Start by documenting a repeatable process for ${worst.name.toLowerCase()}. You can't automate or delegate what isn't defined. Once the process is clear, layer in tools to speed it up, then assign ownership.`;
+  } else if (worstLens === 'tools') {
+    rec += `Your ${worst.name.toLowerCase()} process exists but isn't supported by the right technology. Identify one tool that eliminates the biggest manual bottleneck, implement it, and build the habit before adding more.`;
+  } else {
+    rec += `The ${worst.name.toLowerCase()} system lacks clear ownership. Assign one person to own it, give them a simple metric to hit, and review it weekly. Tools and process improvements won't stick without accountability.`;
+  }
+
+  return rec;
+}
+
+function generateTextSummary(answers, notes, clientName, businessName, industry, teamSize, mainService) {
   let txt = `AI JUST MET YOU — Business Systems Audit\n`;
   if (businessName) txt += `Business: ${businessName}\n`;
   if (clientName) txt += `Client: ${clientName}\n`;
+  if (industry) txt += `Industry: ${industry}\n`;
+  if (teamSize) txt += `Team size: ${teamSize}\n`;
+  if (mainService) txt += `Primary service: ${mainService}\n`;
   txt += `Date: ${new Date().toLocaleDateString()}\n\n--- SCORES ---\n`;
   SYSTEMS.forEach(sys => {
     const avg = getSystemAvg(answers, sys.key);
     const level = getSystemLevel(avg).toUpperCase();
     txt += `\n${sys.name.toUpperCase()} (${level} — ${avg.toFixed(1)})\n`;
     LENSES.forEach(l => {
-      const sc = answers[`${sys.key}-${l}`];
-      txt += `  ${l.charAt(0).toUpperCase() + l.slice(1)}: ${sc ? sc.toUpperCase() : 'Not scored'}\n`;
+      const answerText = getAnswerText(answers, sys.key, l);
+      txt += `  ${l.charAt(0).toUpperCase() + l.slice(1)}: ${answerText || 'Not scored'}\n`;
     });
     if (notes[sys.key]) txt += `  Notes: ${notes[sys.key]}\n`;
   });
@@ -237,7 +300,7 @@ function generateTextSummary(answers, notes, clientName, businessName) {
   if (worst) txt += `Weakest system: ${worst.name}\n`;
   if (dropoff.dropFrom && dropoff.biggestDrop > 0) txt += `Biggest drop-off: ${dropoff.dropFrom.name} → ${dropoff.dropTo.name}\n`;
   txt += `\n--- RECOMMENDATION ---\n`;
-  if (worst) txt += `Focus on ${worst.name} first. Fix the process, then add AI-powered tools, then address people.\n`;
+  if (worst) txt += getRecommendation(worst, answers, industry, teamSize, mainService) + '\n';
   return txt;
 }
 
@@ -266,9 +329,9 @@ const C = {
 };
 
 const LEVEL_DISPLAY = {
-  red: { label: 'RED', color: C.red, bg: C.redBg, text: C.redText },
-  yellow: { label: 'YELLOW', color: C.yellow, bg: C.yellowBg, text: C.yellowText },
-  green: { label: 'GREEN', color: C.green, bg: C.greenBg, text: C.greenText },
+  red: { label: 'Needs attention', color: C.red, bg: C.redBg, text: C.redText },
+  yellow: { label: 'Has gaps', color: C.yellow, bg: C.yellowBg, text: C.yellowText },
+  green: { label: 'Working well', color: C.green, bg: C.greenBg, text: C.greenText },
 };
 
 // ─── Main Component ─────────────────────────────────────────
@@ -280,6 +343,10 @@ export default function AuditApp() {
   const [notes, setNotes] = useState({});
   const [clientName, setClientName] = useState('');
   const [businessName, setBusinessName] = useState('');
+  const [industry, setIndustry] = useState('');
+  const [teamSize, setTeamSize] = useState('');
+  const [mainService, setMainService] = useState('');
+  const [biggestFrustration, setBiggestFrustration] = useState('');
   const [copied, setCopied] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
@@ -294,6 +361,10 @@ export default function AuditApp() {
         if (parsed.notes) setNotes(parsed.notes);
         if (parsed.clientName) setClientName(parsed.clientName);
         if (parsed.businessName) setBusinessName(parsed.businessName);
+        if (parsed.industry) setIndustry(parsed.industry);
+        if (parsed.teamSize) setTeamSize(parsed.teamSize);
+        if (parsed.mainService) setMainService(parsed.mainService);
+        if (parsed.biggestFrustration) setBiggestFrustration(parsed.biggestFrustration);
         if (parsed.currentStep !== undefined) setCurrentStep(parsed.currentStep);
         if (parsed.screen) setScreen(parsed.screen);
       }
@@ -304,6 +375,7 @@ export default function AuditApp() {
     try {
       localStorage.setItem('aijmy-audit', JSON.stringify({
         screen, currentStep, answers, notes, clientName, businessName,
+        industry, teamSize, mainService, biggestFrustration,
       }));
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
@@ -317,6 +389,10 @@ export default function AuditApp() {
     setNotes({});
     setClientName('');
     setBusinessName('');
+    setIndustry('');
+    setTeamSize('');
+    setMainService('');
+    setBiggestFrustration('');
     localStorage.removeItem('aijmy-audit');
   };
 
@@ -329,6 +405,24 @@ export default function AuditApp() {
   const currentAnswer = step ? answers[`${system.key}-${step.lens}`] : null;
   const isLastLensOfSystem = step && step.lens === 'people';
   const answeredCount = Object.keys(answers).length;
+
+  // Shared input style
+  const inputStyle = {
+    width: '100%', padding: '14px 16px', background: C.surface,
+    border: `1px solid ${C.surfaceBorder}`, fontSize: 15, outline: 'none',
+    color: C.black, appearance: 'none', WebkitAppearance: 'none',
+  };
+
+  const selectStyle = {
+    ...inputStyle, cursor: 'pointer',
+    backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238A9AA4' stroke-width='1.5' fill='none'/%3E%3C/svg%3E")`,
+    backgroundRepeat: 'no-repeat', backgroundPosition: 'right 16px center',
+  };
+
+  const labelStyle = {
+    fontSize: 10, fontWeight: 700, letterSpacing: '0.15em',
+    color: C.mutedLight, textTransform: 'uppercase', display: 'block', marginBottom: 8,
+  };
 
   // ─── Header ─────────────────────────────────────────────
 
@@ -369,7 +463,7 @@ export default function AuditApp() {
           padding: '0 28px 60px',
         }}>
           <div style={{ maxWidth: 480, width: '100%' }}>
-            <div style={{ marginBottom: 48 }}>
+            <div style={{ marginBottom: 40 }}>
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24,
               }}>
@@ -392,35 +486,52 @@ export default function AuditApp() {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
-              <div>
-                <label style={{
-                  fontSize: 10, fontWeight: 700, letterSpacing: '0.15em',
-                  color: C.mutedLight, textTransform: 'uppercase', display: 'block', marginBottom: 8,
-                }}>CLIENT NAME</label>
-                <input
-                  value={clientName} onChange={e => setClientName(e.target.value)}
-                  placeholder="First and last name"
-                  style={{
-                    width: '100%', padding: '14px 16px', background: C.surface,
-                    border: `1px solid ${C.surfaceBorder}`, fontSize: 15, outline: 'none',
-                    color: C.black,
-                  }}
-                />
+              {/* Row: Name + Business */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={labelStyle}>YOUR NAME</label>
+                  <input value={clientName} onChange={e => setClientName(e.target.value)}
+                    placeholder="First and last name" style={inputStyle} />
+                </div>
+                <div>
+                  <label style={labelStyle}>BUSINESS NAME</label>
+                  <input value={businessName} onChange={e => setBusinessName(e.target.value)}
+                    placeholder="Your company name" style={inputStyle} />
+                </div>
               </div>
+
+              {/* Row: Industry + Team Size */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={labelStyle}>INDUSTRY</label>
+                  <select value={industry} onChange={e => setIndustry(e.target.value)} style={selectStyle}>
+                    <option value="">Select industry</option>
+                    {INDUSTRIES.map(i => <option key={i} value={i}>{i}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>TEAM SIZE</label>
+                  <select value={teamSize} onChange={e => setTeamSize(e.target.value)} style={selectStyle}>
+                    <option value="">Select size</option>
+                    {TEAM_SIZES.map(s => <option key={s} value={s}>{s} people</option>)}
+                  </select>
+                </div>
+              </div>
+
+              {/* Main Service */}
               <div>
-                <label style={{
-                  fontSize: 10, fontWeight: 700, letterSpacing: '0.15em',
-                  color: C.mutedLight, textTransform: 'uppercase', display: 'block', marginBottom: 8,
-                }}>BUSINESS NAME</label>
-                <input
-                  value={businessName} onChange={e => setBusinessName(e.target.value)}
-                  placeholder="Your company name"
-                  style={{
-                    width: '100%', padding: '14px 16px', background: C.surface,
-                    border: `1px solid ${C.surfaceBorder}`, fontSize: 15, outline: 'none',
-                    color: C.black,
-                  }}
-                />
+                <label style={labelStyle}>WHAT DO YOU SELL OR DELIVER?</label>
+                <input value={mainService} onChange={e => setMainService(e.target.value)}
+                  placeholder="e.g. Kitchen renovations, tax prep, web design"
+                  style={inputStyle} />
+              </div>
+
+              {/* Biggest Frustration */}
+              <div>
+                <label style={labelStyle}>BIGGEST FRUSTRATION RIGHT NOW</label>
+                <input value={biggestFrustration} onChange={e => setBiggestFrustration(e.target.value)}
+                  placeholder="e.g. I spend all my time on admin instead of growth"
+                  style={inputStyle} />
               </div>
             </div>
 
@@ -458,6 +569,7 @@ export default function AuditApp() {
     const worst = getWorstSystem(answers);
     const dropoff = getBiggestDropoff(answers);
     const runAvg = getSystemAvg(answers, 'run');
+    const recommendation = getRecommendation(worst, answers, industry, teamSize, mainService);
 
     return (
       <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
@@ -488,9 +600,9 @@ export default function AuditApp() {
             }}>
               {businessName ? `${businessName.toUpperCase()} RESULTS` : 'YOUR RESULTS'}
             </h1>
-            {clientName && (
-              <p style={{ fontSize: 14, color: C.muted }}>Prepared for {clientName}</p>
-            )}
+            <p style={{ fontSize: 14, color: C.muted }}>
+              {[clientName, industry, teamSize ? `${teamSize} people` : ''].filter(Boolean).join(' · ')}
+            </p>
           </div>
 
           {/* System Overview Grid */}
@@ -511,21 +623,20 @@ export default function AuditApp() {
                 }}>
                   <div style={{
                     fontSize: 10, fontWeight: 700, letterSpacing: '0.12em',
-                    color: isWorst ? C.mutedLight : C.mutedLight, marginBottom: 8,
-                    textTransform: 'uppercase',
+                    color: C.mutedLight, marginBottom: 8, textTransform: 'uppercase',
                   }}>{sys.phase}</div>
                   <div style={{
                     fontSize: 16, fontWeight: 800, color: isWorst ? C.white : C.black,
                     marginBottom: 8, letterSpacing: '-0.02em',
                   }}>{sys.name}</div>
                   <div style={{
-                    fontSize: 28, fontWeight: 900, color: isWorst ? ld.color : ld.color,
+                    fontSize: 28, fontWeight: 900, color: ld.color,
                     marginBottom: 4,
                   }}>{avg ? avg.toFixed(1) : '—'}</div>
                   <div style={{
                     fontSize: 10, fontWeight: 700, letterSpacing: '0.1em',
-                    color: isWorst ? C.white : ld.color,
-                  }}>{ld.label}</div>
+                    color: isWorst ? C.mutedLight : ld.color,
+                  }}>{ld.label.toUpperCase()}</div>
                 </div>
               );
             })}
@@ -540,21 +651,27 @@ export default function AuditApp() {
                   textTransform: 'uppercase', marginBottom: 8,
                 }}>WEAKEST SYSTEM</div>
                 <div style={{ fontSize: 18, fontWeight: 800, color: C.black, marginBottom: 12, letterSpacing: '-0.02em' }}>
-                  {worst.name}
+                  {worst.name} — {worst.phaseName.toLowerCase()}
                 </div>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   {LENSES.map(l => {
                     const sc = answers[`${worst.key}-${l}`];
-                    if (!sc) return null;
+                    const text = getAnswerText(answers, worst.key, l);
+                    if (!sc || !text) return null;
                     const ld = LEVEL_DISPLAY[sc];
                     return (
-                      <span key={l} style={{
-                        fontSize: 11, fontWeight: 700, padding: '4px 12px',
-                        background: ld.bg, color: ld.text, letterSpacing: '0.05em',
-                        textTransform: 'uppercase',
-                      }}>
-                        {l}: {ld.label}
-                      </span>
+                      <div key={l} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                        <div style={{
+                          width: 8, height: 8, borderRadius: '50%', background: ld.color,
+                          marginTop: 5, flexShrink: 0,
+                        }} />
+                        <div>
+                          <span style={{ fontSize: 11, fontWeight: 700, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                            {l}:
+                          </span>
+                          <span style={{ fontSize: 13, color: C.black, marginLeft: 6 }}>{text}</span>
+                        </div>
+                      </div>
                     );
                   })}
                 </div>
@@ -571,8 +688,28 @@ export default function AuditApp() {
                   {dropoff.dropFrom.name} → {dropoff.dropTo.name}
                 </div>
                 <p style={{ fontSize: 13, color: C.muted, marginTop: 8, lineHeight: 1.5 }}>
-                  This is where the most revenue is leaking. Fix this transition first.
+                  {mainService
+                    ? `Your ${mainService.toLowerCase()} business is generating interest but losing it between ${dropoff.dropFrom.name.toLowerCase()} and ${dropoff.dropTo.name.toLowerCase()}. This is where revenue is leaking.`
+                    : `This is where the most revenue is leaking. Fix this transition first.`
+                  }
                 </p>
+              </div>
+            )}
+
+            {biggestFrustration && (
+              <div style={{ padding: '20px 24px', background: C.surface, borderLeft: `4px solid ${C.muted}` }}>
+                <div style={{
+                  fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', color: C.mutedLight,
+                  textTransform: 'uppercase', marginBottom: 8,
+                }}>YOU TOLD US YOUR BIGGEST FRUSTRATION</div>
+                <div style={{ fontSize: 15, color: C.black, fontStyle: 'italic', lineHeight: 1.5 }}>
+                  &ldquo;{biggestFrustration}&rdquo;
+                </div>
+                {worst && (
+                  <p style={{ fontSize: 13, color: C.muted, marginTop: 8, lineHeight: 1.5 }}>
+                    Based on your scores, this likely traces back to gaps in your {worst.name.toLowerCase()} system. The fix starts there.
+                  </p>
+                )}
               </div>
             )}
 
@@ -583,66 +720,121 @@ export default function AuditApp() {
                   textTransform: 'uppercase', marginBottom: 8,
                 }}>OPERATIONAL DRAG WARNING</div>
                 <p style={{ fontSize: 13, color: C.muted, lineHeight: 1.5 }}>
-                  RUN scored Red — the back office is consuming the owner's time and slowing everything above it.
+                  {teamSize === 'Just me'
+                    ? "Your back office is consuming your time. As a solo operator, every hour spent on admin is an hour not spent on revenue."
+                    : "Your back office is consuming the owner's time and slowing everything above it. Until operations runs without constant intervention, growth will stall."
+                  }
                 </p>
               </div>
             )}
           </div>
 
-          {/* Detailed Scores */}
+          {/* Detailed Breakdown — shows actual answer descriptions */}
           <div style={{ marginBottom: 40 }}>
             <div style={{
               fontSize: 10, fontWeight: 700, letterSpacing: '0.15em', color: C.mutedLight,
               textTransform: 'uppercase', marginBottom: 20,
             }}>DETAILED BREAKDOWN</div>
-            {SYSTEMS.map(sys => (
-              <div key={sys.key} style={{
-                marginBottom: 20, padding: '20px 24px', background: C.surface,
-                border: `1px solid ${C.surfaceBorder}`,
-              }}>
-                <div style={{
-                  display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 14,
+            {SYSTEMS.map(sys => {
+              const avg = getSystemAvg(answers, sys.key);
+              const level = getSystemLevel(avg);
+              const ld = LEVEL_DISPLAY[level];
+              return (
+                <div key={sys.key} style={{
+                  marginBottom: 16, background: C.surface,
+                  border: `1px solid ${C.surfaceBorder}`,
                 }}>
-                  <span style={{
-                    fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', color: C.mutedLight,
-                  }}>{sys.phase}</span>
-                  <span style={{ fontSize: 16, fontWeight: 800, color: C.black, letterSpacing: '-0.02em' }}>
-                    {sys.name}
-                  </span>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
-                  {LENSES.map(l => {
-                    const sc = answers[`${sys.key}-${l}`];
-                    const ld = sc ? LEVEL_DISPLAY[sc] : null;
-                    return (
-                      <div key={l} style={{
-                        padding: '12px', textAlign: 'center',
-                        background: ld ? ld.bg : 'rgba(0,0,0,0.03)',
-                      }}>
-                        <div style={{
-                          fontSize: 10, fontWeight: 600, letterSpacing: '0.08em',
-                          color: C.mutedLight, textTransform: 'uppercase', marginBottom: 4,
-                        }}>{l}</div>
-                        <div style={{
-                          fontSize: 13, fontWeight: 800,
-                          color: ld ? ld.text : C.mutedLight,
-                          letterSpacing: '0.05em',
-                        }}>{ld ? ld.label : '—'}</div>
-                      </div>
-                    );
-                  })}
-                </div>
-                {notes[sys.key] && (
+                  {/* System header */}
                   <div style={{
-                    marginTop: 12, padding: '12px', background: 'rgba(0,0,0,0.03)',
-                    fontSize: 13, color: C.muted, lineHeight: 1.5, whiteSpace: 'pre-wrap',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '16px 24px', borderBottom: `1px solid ${C.surfaceBorder}`,
                   }}>
-                    {notes[sys.key]}
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+                      <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', color: C.mutedLight }}>
+                        {sys.phase}
+                      </span>
+                      <span style={{ fontSize: 16, fontWeight: 800, color: C.black, letterSpacing: '-0.02em' }}>
+                        {sys.name}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: ld.color }} />
+                      <span style={{ fontSize: 12, fontWeight: 700, color: ld.color }}>
+                        {avg.toFixed(1)}
+                      </span>
+                    </div>
                   </div>
-                )}
-              </div>
-            ))}
+                  {/* Lens details */}
+                  <div style={{ padding: '16px 24px' }}>
+                    {LENSES.map((l, i) => {
+                      const sc = answers[`${sys.key}-${l}`];
+                      const text = getAnswerText(answers, sys.key, l);
+                      const lensLd = sc ? LEVEL_DISPLAY[sc] : null;
+                      return (
+                        <div key={l} style={{
+                          display: 'flex', alignItems: 'flex-start', gap: 12,
+                          padding: '10px 0',
+                          borderTop: i > 0 ? `1px solid rgba(0,0,0,0.06)` : 'none',
+                        }}>
+                          <div style={{
+                            width: 8, height: 8, borderRadius: '50%', marginTop: 5, flexShrink: 0,
+                            background: lensLd ? lensLd.color : C.divider,
+                          }} />
+                          <div>
+                            <div style={{
+                              fontSize: 10, fontWeight: 700, color: C.mutedLight,
+                              textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3,
+                            }}>{l}</div>
+                            <div style={{ fontSize: 13, color: C.black, lineHeight: 1.5 }}>
+                              {text || 'Not scored'}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {notes[sys.key] && (
+                    <div style={{
+                      padding: '12px 24px 16px', borderTop: `1px solid ${C.surfaceBorder}`,
+                      fontSize: 13, color: C.muted, lineHeight: 1.5, whiteSpace: 'pre-wrap',
+                      fontStyle: 'italic',
+                    }}>
+                      {notes[sys.key]}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
+
+          {/* What good looks like — for the weakest system */}
+          {worst && (
+            <div style={{ marginBottom: 40, padding: '24px', background: C.greenBg, border: `1px solid #BBF0D5` }}>
+              <div style={{
+                fontSize: 10, fontWeight: 700, letterSpacing: '0.15em', color: C.greenText,
+                textTransform: 'uppercase', marginBottom: 12,
+              }}>WHAT GOOD LOOKS LIKE — {worst.name.toUpperCase()}</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {LENSES.map(l => {
+                  const greenText = getGreenText(worst.key, l);
+                  return (
+                    <div key={l} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                      <div style={{
+                        width: 8, height: 8, borderRadius: '50%', background: C.green,
+                        marginTop: 5, flexShrink: 0,
+                      }} />
+                      <div>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: C.greenText, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                          {l}:
+                        </span>
+                        <span style={{ fontSize: 13, color: C.greenText, marginLeft: 6 }}>{greenText}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Recommendation */}
           {worst && (
@@ -653,11 +845,8 @@ export default function AuditApp() {
                 fontSize: 10, fontWeight: 700, letterSpacing: '0.15em',
                 color: C.mutedLight, textTransform: 'uppercase', marginBottom: 12,
               }}>RECOMMENDED NEXT STEP</div>
-              <p style={{ fontSize: 15, lineHeight: 1.6, color: '#E0E0E0' }}>
-                The biggest opportunity is in <strong style={{ color: C.white }}>{worst.name}</strong>.
-                Fix the <strong style={{ color: C.white }}>process</strong> first — get a repeatable system in place.
-                Then layer in AI-powered <strong style={{ color: C.white }}>tools</strong> to automate it.
-                Address <strong style={{ color: C.white }}>people</strong> last.
+              <p style={{ fontSize: 15, lineHeight: 1.7, color: '#E0E0E0' }}>
+                {recommendation}
               </p>
             </div>
           )}
@@ -677,7 +866,7 @@ export default function AuditApp() {
             </button>
             <button
               onClick={() => {
-                navigator.clipboard.writeText(generateTextSummary(answers, notes, clientName, businessName))
+                navigator.clipboard.writeText(generateTextSummary(answers, notes, clientName, businessName, industry, teamSize, mainService))
                   .then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); })
                   .catch(() => {});
               }}
@@ -751,7 +940,7 @@ export default function AuditApp() {
               letterSpacing: '-0.03em', color: C.black, textTransform: 'uppercase',
               marginBottom: 20,
             }}>
-              {step.question.replace('?', '').toUpperCase() + '.'}
+              {step.question.toUpperCase()}
             </h2>
 
             <p style={{ fontSize: 14, color: C.muted, lineHeight: 1.6, maxWidth: 380 }}>
@@ -767,7 +956,12 @@ export default function AuditApp() {
                 return (
                   <button
                     key={opt.letter}
-                    onClick={() => setAnswer(system.key, step.lens, opt.level)}
+                    onClick={() => {
+                      setAnswer(system.key, step.lens, opt.level);
+                      if (currentStep < TOTAL_STEPS - 1) {
+                        setTimeout(() => { setCurrentStep(currentStep + 1); setShowNotes(false); }, 600);
+                      }
+                    }}
                     style={{
                       display: 'flex', alignItems: 'flex-start', gap: 16,
                       padding: '18px 20px', textAlign: 'left', width: '100%',

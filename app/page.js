@@ -201,10 +201,10 @@ export default function Home() {
           </div>
           <div style={{ background: '#fff', borderRadius: 14, padding: '1.5rem', border: '1px solid #E8E6E0', marginBottom: '1rem' }}>
             <label style={{ fontSize: 12, fontWeight: 600, color: '#888780', display: 'block', marginBottom: 6, letterSpacing: '0.02em' }}>Client name</label>
-            <input value={clientName} onChange={e => setClientName(e.target.value)} placeholder="e.g. Vinny Matarazzo"
+            <input value={clientName} onChange={e => setClientName(e.target.value)} placeholder="Client name"
               style={{ width: '100%', padding: '11px 14px', borderRadius: 8, border: '1px solid #E8E6E0', fontSize: 15, marginBottom: 16, boxSizing: 'border-box', background: '#FAFAF8', outline: 'none' }} />
             <label style={{ fontSize: 12, fontWeight: 600, color: '#888780', display: 'block', marginBottom: 6, letterSpacing: '0.02em' }}>Business name</label>
-            <input value={businessName} onChange={e => setBusinessName(e.target.value)} placeholder="e.g. LaTerra Builders"
+            <input value={businessName} onChange={e => setBusinessName(e.target.value)} placeholder="Business name"
               style={{ width: '100%', padding: '11px 14px', borderRadius: 8, border: '1px solid #E8E6E0', fontSize: 15, boxSizing: 'border-box', background: '#FAFAF8', outline: 'none' }} />
           </div>
           <button onClick={() => setScreen('audit')}
@@ -213,9 +213,7 @@ export default function Home() {
             onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}>
             Start audit
           </button>
-          <p style={{ fontSize: 11, color: '#B4B2A9', textAlign: 'center', marginTop: 16, lineHeight: 1.6 }}>
-            5 systems &middot; Process / Tools / People &middot; Red / Yellow / Green scoring
-          </p>
+          
         </div>
       </div>
     );

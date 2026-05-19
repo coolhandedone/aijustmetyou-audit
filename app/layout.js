@@ -1,19 +1,13 @@
-import { Inter } from 'next/font/google';
 import './globals.css';
 
-const inter = Inter({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800', '900'],
-});
-
 export const metadata = {
-  title: 'AI Just Met You — Business Systems Audit',
-  description: 'Find where AI can fix problems in your business. A structured audit across 5 core systems.',
+  title: 'AI Just Met You — ALi, your managed AI employee',
+  description: 'AI Just Met You builds ALi: a managed AI employee that learns your business, watches the moving parts, and keeps follow-up, inbox, admin, and next steps moving.',
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={inter.className}>
+    <html lang="en">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
       </head>

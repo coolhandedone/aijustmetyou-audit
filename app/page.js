@@ -1,487 +1,151 @@
-export const metadata = {
-  title: 'AI Just Met You — Hire your AI employee',
-  description: 'A managed AI employee for your business. Live in 48 hours. Unlimited usage. Weekly improvements. $10K/mo.',
-};
-
-const whatItDoes = [
-  {
-    eyebrow: '01',
-    title: 'Answers in your voice',
-    body: 'Reads your inbox, calendar, CRM, and docs. Drafts replies, schedules, follows up, and runs recurring work. You approve anything customer-facing.'
-  },
-  {
-    eyebrow: '02',
-    title: 'Plugs into your tools',
-    body: 'Gmail, Slack, Calendly, your CRM, your spreadsheets. No password sharing, no rip-and-replace. We connect what you already use.'
-  },
-  {
-    eyebrow: '03',
-    title: 'Gets better every week',
-    body: 'You flag what was off. We tune behavior, add skills, expand scope. Every Friday a recap goes out: what shipped, what is next.'
-  }
-];
-
-const whoFor = [
-  'Owner-operators and small teams where the owner is the bottleneck on inbox, follow-up, scheduling, or research.',
-  'Real estate teams, marketing agencies, insurance brokerages, law firms, home-services contractors.',
-  'Anyone who has paid a VA, an executive assistant, or a consultant and walked away wishing it just got handled.'
-];
-
-const pricing = [
-  {
-    name: 'Managed AI Employee',
-    price: '$10,000',
-    cadence: '/ month',
-    tag: 'The full offer',
-    bullets: [
-      'One AI employee scoped to a role you pick',
-      'First agent live in 48 hours',
-      'Unlimited usage. No tokens. No credits.',
-      'Weekly improvements based on what your team flags',
-      'Connected to your existing tools',
-      'Owner approval on anything customer-facing',
-      'Direct line to the team that built it',
-      'Cancel anytime',
-    ],
-    cta: 'Hire your AI employee',
-    primary: true,
-  },
-  {
-    name: 'Pilot',
-    price: '$5,000',
-    cadence: '4 weeks',
-    tag: 'Decide if it earns the seat',
-    bullets: [
-      'One scoped workflow we agree on before kickoff',
-      'First agent live in 48 hours',
-      'Unlimited usage during the pilot',
-      'Weekly improvements for all four weeks',
-      'Handoff doc at the end: what worked, what to expand, what to kill',
-      'Credit applied to month one if you continue at $10K/mo',
-    ],
-    cta: 'Start a 4-week pilot',
-    primary: false,
-  }
-];
-
-const objections = [
-  {
-    q: 'Why not just hire someone?',
-    a: 'A junior hire is $60-80K/yr loaded, takes 6 weeks to ramp, and asks for direction. The AI employee runs in 48 hours, never forgets context, and works while you sleep. You still hire humans for human work.'
-  },
-  {
-    q: 'Why not ChatGPT or Claude?',
-    a: 'Those are tools. This is a managed employee built on top of them — connected to your business, trained on your voice, monitored and improved weekly. You do not pay for tokens, run prompts, or babysit anything.'
-  },
-  {
-    q: 'What if it screws up?',
-    a: 'Anything that talks to a customer goes through owner approval until you trust it. Anything internal gets logged. If something breaks, we fix it before you notice.'
-  },
-  {
-    q: 'What about my data?',
-    a: 'Connections use OAuth, not password sharing. Your data stays in your accounts. We can scope access per workflow. No training on your data, ever.'
-  }
-];
-
-export default function HomePage() {
+export default function Home() {
   return (
-    <main style={styles.page}>
-      {/* HERO */}
-      <section style={styles.hero}>
-        <div style={styles.kicker}>AI Just Met You</div>
-        <h1 style={styles.h1}>Hire your AI employee.</h1>
-        <p style={styles.lede}>
-          A managed AI employee for your business. Live in 48 hours. Unlimited usage. Weekly improvements. $10K a month.
-        </p>
-        <div style={styles.ctaRow}>
-          <a style={styles.primaryCta} href="https://calendly.com/luke72/20min">Book a 20-minute call</a>
-          <a style={styles.secondaryCta} href="#pricing">See pricing</a>
-        </div>
-      </section>
+    <main>
+      <div className="grain" />
 
-      {/* BAND */}
-      <section style={styles.band}>
-        <p style={styles.bandText}>
-          You do not need more tools. You need someone running the work.
-        </p>
-      </section>
-
-      {/* WHAT IT DOES */}
-      <section style={styles.gridSection}>
-        {whatItDoes.map((item) => (
-          <article key={item.title} style={styles.card}>
-            <div style={styles.eyebrow}>{item.eyebrow}</div>
-            <h2 style={styles.cardTitle}>{item.title}</h2>
-            <p style={styles.cardBody}>{item.body}</p>
-          </article>
-        ))}
-      </section>
-
-      {/* WHO IT IS FOR */}
-      <section style={styles.split}>
-        <div>
-          <div style={styles.kicker}>Best fit</div>
-          <h2 style={styles.h2}>Built for owners drowning in their own inbox.</h2>
-        </div>
-        <div style={styles.stack}>
-          {whoFor.map((item) => (
-            <p key={item} style={styles.listItem}>{item}</p>
-          ))}
-        </div>
-      </section>
-
-      {/* PRICING */}
-      <section id="pricing" style={styles.pricingSection}>
-        <div style={styles.pricingHeader}>
-          <div style={styles.kicker}>Pricing</div>
-          <h2 style={styles.h2}>One price. One AI employee. Live in 48 hours.</h2>
-          <p style={styles.pricingSub}>Unlimited usage. No tokens. No credits. Weekly improvements. Cancel anytime.</p>
-        </div>
-        <div style={styles.pricingGrid}>
-          {pricing.map((tier) => (
-            <div key={tier.name} style={tier.primary ? styles.tierPrimary : styles.tierSecondary}>
-              <div style={styles.tierTag}>{tier.tag}</div>
-              <h3 style={styles.tierName}>{tier.name}</h3>
-              <div style={styles.tierPriceRow}>
-                <span style={styles.tierPrice}>{tier.price}</span>
-                <span style={styles.tierCadence}>{tier.cadence}</span>
-              </div>
-              <ul style={styles.tierList}>
-                {tier.bullets.map((b) => (
-                  <li key={b} style={styles.tierBullet}>{b}</li>
-                ))}
-              </ul>
-              <a
-                style={tier.primary ? styles.primaryCta : styles.secondaryCta}
-                href="https://calendly.com/luke72/20min"
-              >
-                {tier.cta}
-              </a>
+      <section className="hero">
+        <div className="wrap hero-grid">
+          <div className="hero-copy">
+            <div className="brandmark" aria-label="AI Just Met You">
+              <span>AI</span><i />
+              <strong>JMY</strong>
             </div>
-          ))}
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section style={styles.faqSection}>
-        <div style={styles.kicker}>Common questions</div>
-        <div style={styles.faqGrid}>
-          {objections.map((item) => (
-            <div key={item.q} style={styles.faqItem}>
-              <h3 style={styles.faqQ}>{item.q}</h3>
-              <p style={styles.faqA}>{item.a}</p>
+            <p className="eyebrow">AI Just Met You</p>
+            <h1>
+              ALi is the second operator your business has been missing.
+            </h1>
+            <p className="lead">
+              A managed AI employee that learns how you work, watches the moving parts, and keeps follow-up, inbox, admin, and next steps moving without turning into another tool you have to manage.
+            </p>
+            <div className="hero-actions">
+              <a className="primary" href="https://calendly.com/luke72/20min">Book a 20-minute workflow audit</a>
+              <a className="secondary" href="/follow-up-operator">Run the follow-up audit</a>
             </div>
-          ))}
-        </div>
-      </section>
-
-      {/* FINAL CTA */}
-      <section style={styles.finalCta}>
-        <h2 style={styles.h2}>48 hours from call to live.</h2>
-        <p style={styles.finalSub}>20-minute call. We map one workflow. If it is a fit, your AI employee is running Wednesday.</p>
-        <a style={styles.primaryCta} href="https://calendly.com/luke72/20min">Book the call</a>
-      </section>
-
-      {/* FOOTER */}
-      <footer style={styles.footer}>
-        <div style={styles.footerInner}>
-          <span style={styles.footerBrand}>AI Just Met You</span>
-          <div style={styles.footerLinks}>
-            <a style={styles.footerLink} href="/audit">Free Business Audit</a>
-            <a style={styles.footerLink} href="/follow-up-operator">Follow-Up Operator</a>
-            <a style={styles.footerLink} href="https://calendly.com/luke72/20min">Book a call</a>
           </div>
+
+          <aside className="operator-card" aria-label="ALi operator preview">
+            <div className="operator-topline">
+              <span>ALi</span>
+              <b>Always on</b>
+            </div>
+            <div className="operator-feed">
+              <div>
+                <small>Watching</small>
+                <p>New leads, stale estimates, unread replies, calendar promises, and open loops.</p>
+              </div>
+              <div>
+                <small>Thinking like the owner</small>
+                <p>Prioritizes by money at risk, relationship context, and what normally gets handled first.</p>
+              </div>
+              <div>
+                <small>Preparing the move</small>
+                <p>Drafts the text, email, task, or owner brief in the business voice. Nothing sends without approval.</p>
+              </div>
+            </div>
+          </aside>
+        </div>
+        <div className="scroll-cue">Scroll<span /></div>
+      </section>
+
+      <section>
+        <div className="wrap split">
+          <div>
+            <p className="eyebrow">The real problem</p>
+            <h2>Your business does not need more software. It needs more of you.</h2>
+          </div>
+          <div className="copy-stack">
+            <p>Owners already know what should happen next. Call this lead back. Chase that quote. Reply to that client. Prep for tomorrow. Update the team.</p>
+            <p>The problem is capacity. The whole business still depends on one person remembering, checking, deciding, and nudging the work forward.</p>
+            <p>ALi gives the business a second operating layer that understands the way you move and keeps the obvious next step from dying in the gap.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div className="wrap section-head">
+          <p className="eyebrow">What ALi becomes</p>
+          <h2>A native extension of how the business already runs.</h2>
+          <p className="section-lead">Not a dashboard. Not a prompt pack. Not a chatbot waiting for perfect instructions.</p>
+        </div>
+        <div className="wrap pillars">
+          <article>
+            <span>01</span>
+            <h3>Learns the operating rhythm</h3>
+            <p>How you prioritize, what you approve, what gets escalated, what should never happen without you.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>Lives where work happens</h3>
+            <p>Email, calendar, CRM, sheets, docs, Slack, notes, browser-based systems, and the messy handoffs between them.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>Moves the next step forward</h3>
+            <p>Daily money lists, drafted replies, follow-up queues, meeting actions, research, reports, and admin loops.</p>
+          </article>
+          <article>
+            <span>04</span>
+            <h3>Improves every week</h3>
+            <p>New skills, sharper memory, better rules, fewer edge cases, and more of the business handled without re-explaining.</p>
+          </article>
+        </div>
+      </section>
+
+      <section className="dark-band">
+        <div className="wrap split compact">
+          <div>
+            <p className="eyebrow">First proof</p>
+            <h2>We start where dropped follow-up is already costing money.</h2>
+          </div>
+          <div className="flow">
+            <div className="step"><b>1</b><p>ALi reads the lead queue, inbox, estimates, notes, and calendar promises.</p></div>
+            <div className="step"><b>2</b><p>It finds the threads most likely to turn into revenue or reputation damage.</p></div>
+            <div className="step"><b>3</b><p>It writes the next move in the owner’s voice and explains why it matters.</p></div>
+            <div className="step"><b>4</b><p>You approve, edit, or ignore. ALi learns from the decision and gets better.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div className="wrap split">
+          <div>
+            <p className="eyebrow">The offer</p>
+            <h2>One managed AI employee. Live on one workflow first.</h2>
+          </div>
+          <div className="pricing-card">
+            <div>
+              <span className="tag">Pilot</span>
+              <h3>$5K/mo</h3>
+              <p>For the first focused workflow where the pain is obvious and the scope is tight.</p>
+            </div>
+            <div>
+              <span className="tag">Standard</span>
+              <h3>$10K/mo</h3>
+              <p>Managed AI employee, unlimited reasonable usage, 48-hour first-agent live, weekly improvements, monitoring, and support.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="closer">
+        <div className="wrap">
+          <p className="eyebrow">Next step</p>
+          <h2>Bring the messy workflow. We’ll show you what ALi would take off your plate.</h2>
+          <p className="lead">No prep. No giant transformation project. One workflow review. You will know in 20 minutes if it is worth building.</p>
+          <a className="primary" href="https://calendly.com/luke72/20min">Book a workflow audit</a>
+        </div>
+      </section>
+
+      <footer className="site-footer">
+        <div className="wrap footer-inner">
+          <span>AI Just Met You</span>
+          <nav>
+            <a href="/audit">Business audit</a>
+            <a href="/follow-up-operator">Follow-up operator</a>
+            <a href="https://calendly.com/luke72/20min">Book a call</a>
+          </nav>
         </div>
       </footer>
     </main>
   );
 }
-
-const styles = {
-  page: {
-    background: '#12110E',
-    color: '#F6F1E8',
-    minHeight: '100vh',
-    fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
-  },
-  hero: {
-    maxWidth: 1120,
-    margin: '0 auto',
-    padding: '120px 24px 80px',
-  },
-  kicker: {
-    color: '#B79A5B',
-    textTransform: 'uppercase',
-    letterSpacing: '0.16em',
-    fontSize: 12,
-    fontWeight: 800,
-    marginBottom: 18,
-  },
-  h1: {
-    fontSize: 'clamp(52px, 10vw, 128px)',
-    lineHeight: 0.9,
-    letterSpacing: '-0.07em',
-    maxWidth: 1000,
-    margin: 0,
-  },
-  lede: {
-    color: '#D8D1C3',
-    fontSize: 'clamp(20px, 3vw, 30px)',
-    lineHeight: 1.25,
-    maxWidth: 820,
-    marginTop: 28,
-  },
-  ctaRow: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: 14,
-    marginTop: 36,
-  },
-  primaryCta: {
-    background: '#F6F1E8',
-    color: '#12110E',
-    textDecoration: 'none',
-    borderRadius: 999,
-    padding: '15px 24px',
-    fontWeight: 800,
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  secondaryCta: {
-    border: '1px solid rgba(246,241,232,0.28)',
-    color: '#F6F1E8',
-    textDecoration: 'none',
-    borderRadius: 999,
-    padding: '15px 24px',
-    fontWeight: 700,
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  band: {
-    borderTop: '1px solid rgba(246,241,232,0.14)',
-    borderBottom: '1px solid rgba(246,241,232,0.14)',
-    padding: '40px 24px',
-    background: '#1A1813',
-  },
-  bandText: {
-    maxWidth: 1120,
-    margin: '0 auto',
-    fontSize: 'clamp(26px, 4.5vw, 52px)',
-    lineHeight: 1.02,
-    letterSpacing: '-0.04em',
-    fontWeight: 800,
-  },
-  gridSection: {
-    maxWidth: 1120,
-    margin: '0 auto',
-    padding: '80px 24px',
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-    gap: 18,
-  },
-  card: {
-    background: '#1D1A14',
-    border: '1px solid rgba(246,241,232,0.12)',
-    borderRadius: 28,
-    padding: 32,
-  },
-  eyebrow: {
-    color: '#B79A5B',
-    fontSize: 13,
-    fontWeight: 900,
-    marginBottom: 28,
-  },
-  cardTitle: {
-    fontSize: 30,
-    lineHeight: 1,
-    margin: 0,
-    letterSpacing: '-0.04em',
-  },
-  cardBody: {
-    color: '#D8D1C3',
-    fontSize: 18,
-    lineHeight: 1.45,
-    marginTop: 18,
-  },
-  split: {
-    maxWidth: 1120,
-    margin: '0 auto',
-    padding: '64px 24px',
-    display: 'grid',
-    gridTemplateColumns: 'minmax(0, 0.9fr) minmax(0, 1.1fr)',
-    gap: 42,
-  },
-  h2: {
-    fontSize: 'clamp(36px, 5.5vw, 72px)',
-    lineHeight: 0.98,
-    letterSpacing: '-0.06em',
-    margin: 0,
-  },
-  stack: {
-    display: 'grid',
-    gap: 14,
-  },
-  listItem: {
-    margin: 0,
-    padding: '20px 0',
-    borderTop: '1px solid rgba(246,241,232,0.14)',
-    color: '#D8D1C3',
-    fontSize: 20,
-    lineHeight: 1.35,
-  },
-  pricingSection: {
-    maxWidth: 1120,
-    margin: '0 auto',
-    padding: '80px 24px',
-  },
-  pricingHeader: {
-    marginBottom: 48,
-    maxWidth: 820,
-  },
-  pricingSub: {
-    color: '#D8D1C3',
-    fontSize: 20,
-    lineHeight: 1.4,
-    marginTop: 20,
-  },
-  pricingGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-    gap: 20,
-  },
-  tierPrimary: {
-    background: '#1D1A14',
-    border: '2px solid #B79A5B',
-    borderRadius: 28,
-    padding: 36,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 20,
-  },
-  tierSecondary: {
-    background: '#181611',
-    border: '1px solid rgba(246,241,232,0.12)',
-    borderRadius: 28,
-    padding: 36,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 20,
-  },
-  tierTag: {
-    color: '#B79A5B',
-    fontSize: 12,
-    fontWeight: 800,
-    letterSpacing: '0.12em',
-    textTransform: 'uppercase',
-  },
-  tierName: {
-    fontSize: 32,
-    margin: 0,
-    letterSpacing: '-0.03em',
-  },
-  tierPriceRow: {
-    display: 'flex',
-    alignItems: 'baseline',
-    gap: 10,
-  },
-  tierPrice: {
-    fontSize: 52,
-    fontWeight: 800,
-    letterSpacing: '-0.05em',
-  },
-  tierCadence: {
-    color: '#D8D1C3',
-    fontSize: 18,
-  },
-  tierList: {
-    listStyle: 'none',
-    padding: 0,
-    margin: 0,
-    display: 'grid',
-    gap: 12,
-  },
-  tierBullet: {
-    color: '#E8E0D0',
-    fontSize: 16,
-    lineHeight: 1.4,
-    paddingLeft: 22,
-    position: 'relative',
-  },
-  faqSection: {
-    maxWidth: 1120,
-    margin: '0 auto',
-    padding: '80px 24px',
-  },
-  faqGrid: {
-    marginTop: 32,
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
-    gap: 20,
-  },
-  faqItem: {
-    background: '#181611',
-    border: '1px solid rgba(246,241,232,0.12)',
-    borderRadius: 24,
-    padding: 28,
-  },
-  faqQ: {
-    margin: 0,
-    fontSize: 22,
-    letterSpacing: '-0.02em',
-  },
-  faqA: {
-    color: '#D8D1C3',
-    fontSize: 17,
-    lineHeight: 1.45,
-    marginTop: 14,
-  },
-  finalCta: {
-    maxWidth: 1120,
-    margin: '0 auto',
-    padding: '96px 24px 120px',
-    textAlign: 'center',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: 24,
-  },
-  finalSub: {
-    color: '#D8D1C3',
-    fontSize: 20,
-    lineHeight: 1.4,
-    maxWidth: 640,
-    margin: 0,
-  },
-  footer: {
-    borderTop: '1px solid rgba(246,241,232,0.14)',
-    padding: '32px 24px',
-  },
-  footerInner: {
-    maxWidth: 1120,
-    margin: '0 auto',
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: 16,
-  },
-  footerBrand: {
-    color: '#B79A5B',
-    fontWeight: 800,
-    letterSpacing: '0.12em',
-    fontSize: 13,
-    textTransform: 'uppercase',
-  },
-  footerLinks: {
-    display: 'flex',
-    gap: 24,
-    flexWrap: 'wrap',
-  },
-  footerLink: {
-    color: '#D8D1C3',
-    textDecoration: 'none',
-    fontSize: 14,
-  },
-};

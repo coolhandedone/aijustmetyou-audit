@@ -1,138 +1,181 @@
+const operatingLoops = [
+  ['08:12', 'New estimate idle 6 days', 'Drafted a check-in that references the exact scope and keeps pressure low.'],
+  ['08:19', 'Calendar promise detected', 'Added a prep note for tomorrow’s client call and pulled the last thread.'],
+  ['08:31', 'Unread buyer reply', 'Flagged as money-risk because the quote is still open and response time matters.'],
+];
+
+const principles = [
+  {
+    label: 'Learns the rhythm',
+    text: 'ALi studies how the owner decides: what gets approved, what gets escalated, what should never move without a human.'
+  },
+  {
+    label: 'Lives in the tools',
+    text: 'Inbox, calendar, CRM, docs, sheets, Slack, browser apps, notes, and the handoffs between them.'
+  },
+  {
+    label: 'Prepares the move',
+    text: 'The next email, call note, daily money list, meeting brief, task, or admin pass is ready before the owner asks.'
+  }
+];
+
+const proofSteps = [
+  'Connect the systems where work already happens.',
+  'Watch for open loops, stale money, and owner bottlenecks.',
+  'Draft the next move in the company voice with context attached.',
+  'Learn from approvals, edits, ignores, and edge cases every week.'
+];
+
 export default function Home() {
   return (
     <main>
-      <div className="grain" />
+      <section className="hero-shell">
+        <nav className="topbar wrap" aria-label="Primary">
+          <a className="wordmark" href="/">AI<span>JMY</span></a>
+          <div className="nav-links">
+            <a href="/audit">Audit</a>
+            <a href="/follow-up-operator">Follow-up operator</a>
+            <a className="nav-cta" href="https://calendly.com/luke72/20min">Book a call</a>
+          </div>
+        </nav>
 
-      <section className="hero">
         <div className="wrap hero-grid">
           <div className="hero-copy">
-            <div className="brandmark" aria-label="AI Just Met You">
-              <span>AI</span><i />
-              <strong>JMY</strong>
-            </div>
-            <p className="eyebrow">AI Just Met You</p>
-            <h1>
-              ALi is the second operator your business has been missing.
-            </h1>
-            <p className="lead">
-              A managed AI employee that learns how you work, watches the moving parts, and keeps follow-up, inbox, admin, and next steps moving without turning into another tool you have to manage.
+            <p className="kicker"><span /> Managed AI employee</p>
+            <h1>ALi gives your business a second operating mind.</h1>
+            <p className="lede">
+              AI Just Met You builds the AI operator that learns how you work, watches the moving parts, and prepares the next move before follow-up, admin, or client context slips.
+            </p>
+            <p className="service-line">
+              We connect to your existing tools, build one live operator workflow, and manage it weekly with approval controls.
             </p>
             <div className="hero-actions">
-              <a className="primary" href="https://calendly.com/luke72/20min">Book a 20-minute workflow audit</a>
-              <a className="secondary" href="/follow-up-operator">Run the follow-up audit</a>
+              <a className="btn primary" href="https://calendly.com/luke72/20min">Book a 20-minute workflow audit</a>
+              <a className="btn secondary" href="/follow-up-operator">Preview the follow-up audit</a>
             </div>
           </div>
 
-          <aside className="operator-card" aria-label="ALi operator preview">
-            <div className="operator-topline">
-              <span>ALi</span>
-              <b>Always on</b>
+          <aside className="command-panel" aria-label="ALi live command layer preview">
+            <div className="panel-header">
+              <div>
+                <small>ALi command layer</small>
+                <strong>Today’s money queue</strong>
+              </div>
+              <span className="status-dot">Live</span>
             </div>
-            <div className="operator-feed">
-              <div>
-                <small>Watching</small>
-                <p>New leads, stale estimates, unread replies, calendar promises, and open loops.</p>
-              </div>
-              <div>
-                <small>Thinking like the owner</small>
-                <p>Prioritizes by money at risk, relationship context, and what normally gets handled first.</p>
-              </div>
-              <div>
-                <small>Preparing the move</small>
-                <p>Drafts the text, email, task, or owner brief in the business voice. Nothing sends without approval.</p>
-              </div>
+            <div className="signal-map">
+              <div className="orb one" />
+              <div className="orb two" />
+              <div className="orb three" />
+              <div className="radar-line" />
+            </div>
+            <div className="feed-list">
+              {operatingLoops.map(([time, title, body]) => (
+                <div className="feed-item" key={title}>
+                  <time>{time}</time>
+                  <div>
+                    <b>{title}</b>
+                    <p>{body}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="approval-card">
+              <small>Prepared for approval</small>
+              <p>“Quick nudge on the estimate — I kept the original scope attached and can adjust timing if your priorities changed.”</p>
             </div>
           </aside>
         </div>
-        <div className="scroll-cue">Scroll<span /></div>
       </section>
 
-      <section>
-        <div className="wrap split">
+      <section className="thesis-section">
+        <div className="wrap narrow">
+          <p className="kicker"><span /> The shift</p>
+          <h2>Your business does not need more software. It needs more of the person who already knows what should happen.</h2>
+          <p>
+            That person is usually the bottleneck. ALi becomes the parallel layer that sees the same context, remembers the operating rules, and turns scattered work into clear next actions.
+          </p>
+        </div>
+      </section>
+
+      <section className="principles-section">
+        <div className="wrap section-intro">
+          <p className="kicker"><span /> What ALi becomes</p>
+          <h2>A native extension of the founder’s operating system.</h2>
+        </div>
+        <div className="wrap principle-grid">
+          {principles.map((item, index) => (
+            <article key={item.label}>
+              <span>0{index + 1}</span>
+              <h3>{item.label}</h3>
+              <p>{item.text}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="proof-section">
+        <div className="wrap proof-grid">
           <div>
-            <p className="eyebrow">The real problem</p>
-            <h2>Your business does not need more software. It needs more of you.</h2>
-          </div>
-          <div className="copy-stack">
-            <p>Owners already know what should happen next. Call this lead back. Chase that quote. Reply to that client. Prep for tomorrow. Update the team.</p>
-            <p>The problem is capacity. The whole business still depends on one person remembering, checking, deciding, and nudging the work forward.</p>
-            <p>ALi gives the business a second operating layer that understands the way you move and keeps the obvious next step from dying in the gap.</p>
-          </div>
-        </div>
-      </section>
-
-      <section>
-        <div className="wrap section-head">
-          <p className="eyebrow">What ALi becomes</p>
-          <h2>A native extension of how the business already runs.</h2>
-          <p className="section-lead">Not a dashboard. Not a prompt pack. Not a chatbot waiting for perfect instructions.</p>
-        </div>
-        <div className="wrap pillars">
-          <article>
-            <span>01</span>
-            <h3>Learns the operating rhythm</h3>
-            <p>How you prioritize, what you approve, what gets escalated, what should never happen without you.</p>
-          </article>
-          <article>
-            <span>02</span>
-            <h3>Lives where work happens</h3>
-            <p>Email, calendar, CRM, sheets, docs, Slack, notes, browser-based systems, and the messy handoffs between them.</p>
-          </article>
-          <article>
-            <span>03</span>
-            <h3>Moves the next step forward</h3>
-            <p>Daily money lists, drafted replies, follow-up queues, meeting actions, research, reports, and admin loops.</p>
-          </article>
-          <article>
-            <span>04</span>
-            <h3>Improves every week</h3>
-            <p>New skills, sharper memory, better rules, fewer edge cases, and more of the business handled without re-explaining.</p>
-          </article>
-        </div>
-      </section>
-
-      <section className="dark-band">
-        <div className="wrap split compact">
-          <div>
-            <p className="eyebrow">First proof</p>
+            <p className="kicker"><span /> How we start</p>
             <h2>We start where dropped follow-up is already costing money.</h2>
+            <p className="body-large">The first workflow is usually simple: stale estimates, missed replies, old leads, and daily owner follow-through.</p>
           </div>
-          <div className="flow">
-            <div className="step"><b>1</b><p>ALi reads the lead queue, inbox, estimates, notes, and calendar promises.</p></div>
-            <div className="step"><b>2</b><p>It finds the threads most likely to turn into revenue or reputation damage.</p></div>
-            <div className="step"><b>3</b><p>It writes the next move in the owner’s voice and explains why it matters.</p></div>
-            <div className="step"><b>4</b><p>You approve, edit, or ignore. ALi learns from the decision and gets better.</p></div>
+          <div className="timeline">
+            {proofSteps.map((step, index) => (
+              <div className="timeline-row" key={step}>
+                <b>{String(index + 1).padStart(2, '0')}</b>
+                <p>{step}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <section>
-        <div className="wrap split">
-          <div>
-            <p className="eyebrow">The offer</p>
-            <h2>One managed AI employee. Live on one workflow first.</h2>
+      <section className="offer-section">
+        <div className="wrap offer-grid">
+          <div className="offer-copy">
+            <p className="kicker"><span /> The offer</p>
+            <h2>One managed AI employee. One workflow live first.</h2>
+            <p>We keep scope tight enough to ship, then expand once the operator proves it can remove real owner load.</p>
           </div>
-          <div className="pricing-card">
-            <div>
-              <span className="tag">Pilot</span>
+          <div className="price-stack">
+            <article>
+              <small>Pilot</small>
               <h3>$5K/mo</h3>
-              <p>For the first focused workflow where the pain is obvious and the scope is tight.</p>
-            </div>
-            <div>
-              <span className="tag">Standard</span>
+              <p>Focused workflow, obvious pain, tight scope, fast operating proof.</p>
+            </article>
+            <article className="featured-price">
+              <small>Standard</small>
               <h3>$10K/mo</h3>
               <p>Managed AI employee, unlimited reasonable usage, 48-hour first-agent live, weekly improvements, monitoring, and support.</p>
-            </div>
+            </article>
           </div>
         </div>
       </section>
 
-      <section className="closer">
-        <div className="wrap">
-          <p className="eyebrow">Next step</p>
+      <section className="trust-section">
+        <div className="wrap trust-grid">
+          <article>
+            <span>Approval layer</span>
+            <p>ALi drafts and prepares. You approve customer-facing moves until the workflow has earned more autonomy.</p>
+          </article>
+          <article>
+            <span>No rip-and-replace</span>
+            <p>The first workflow runs through the tools you already use: email, calendar, CRM, docs, sheets, and notes.</p>
+          </article>
+          <article>
+            <span>Weekly operating loop</span>
+            <p>Edits, ignores, edge cases, and new rules become better behavior instead of another meeting about process.</p>
+          </article>
+        </div>
+      </section>
+
+      <section className="final-section">
+        <div className="wrap final-card">
+          <p className="kicker"><span /> Next step</p>
           <h2>Bring the messy workflow. We’ll show you what ALi would take off your plate.</h2>
-          <p className="lead">No prep. No giant transformation project. One workflow review. You will know in 20 minutes if it is worth building.</p>
-          <a className="primary" href="https://calendly.com/luke72/20min">Book a workflow audit</a>
+          <a className="btn primary" href="https://calendly.com/luke72/20min">Book a workflow audit</a>
         </div>
       </section>
 

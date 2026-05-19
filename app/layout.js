@@ -1,8 +1,8 @@
 import './globals.css';
 
 export const metadata = {
-  title: 'AI Just Met You — ALi, your managed AI employee',
-  description: 'AI Just Met You builds ALi: a managed AI employee that learns your business, watches the moving parts, and keeps follow-up, inbox, admin, and next steps moving.',
+  title: 'AI Just Met You — ALi, your second operating mind',
+  description: 'AI Just Met You builds ALi: a managed AI employee that learns your business, watches the moving parts, and prepares the next move before work slips.',
 };
 
 export default function RootLayout({ children }) {

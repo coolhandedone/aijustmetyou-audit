@@ -307,25 +307,25 @@ function generateTextSummary(answers, notes, clientName, businessName, industry,
 // ─── Colors ─────────────────────────────────────────────────
 
 const C = {
-  bg: '#D8E8F1',
-  surface: '#E8F0F5',
-  surfaceBorder: '#C0D0DA',
+  bg: '#F7F3EA',
+  surface: '#FFFCF5',
+  surfaceBorder: '#CFC6B6',
   white: '#FFFFFF',
-  black: '#0A0A0A',
-  blackSoft: '#1A1A1A',
-  muted: '#5C6E78',
-  mutedLight: '#8A9AA4',
-  divider: '#B4C6D0',
-  accent: '#DC2626',
-  red: '#DC2626',
-  yellow: '#D97706',
-  green: '#059669',
-  redBg: '#FEF2F2',
-  yellowBg: '#FFFBEB',
-  greenBg: '#ECFDF5',
-  redText: '#991B1B',
-  yellowText: '#92400E',
-  greenText: '#065F46',
+  black: '#111111',
+  blackSoft: '#25211C',
+  muted: '#4E463D',
+  mutedLight: '#746A5E',
+  divider: '#D8CFBF',
+  accent: '#B8422E',
+  red: '#B8422E',
+  yellow: '#B7791F',
+  green: '#167A5B',
+  redBg: '#FFF1ED',
+  yellowBg: '#FFF7DF',
+  greenBg: '#EAF8F1',
+  redText: '#7F2419',
+  yellowText: '#6B4313',
+  greenText: '#0E563F',
 };
 
 const LEVEL_DISPLAY = {
@@ -415,7 +415,7 @@ export default function AuditApp() {
 
   const selectStyle = {
     ...inputStyle, cursor: 'pointer',
-    backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238A9AA4' stroke-width='1.5' fill='none'/%3E%3C/svg%3E")`,
+    backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%234E463D' stroke-width='1.5' fill='none'/%3E%3C/svg%3E")`,
     backgroundRepeat: 'no-repeat', backgroundPosition: 'right 16px center',
   };
 
@@ -456,7 +456,7 @@ export default function AuditApp() {
 
   if (screen === 'intro') {
     return (
-      <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: C.bg, color: C.black }}>
         <Header showSave={false} />
         <div style={{
           flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -572,7 +572,7 @@ export default function AuditApp() {
     const recommendation = getRecommendation(worst, answers, industry, teamSize, mainService);
 
     return (
-      <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: C.bg, color: C.black }}>
         <Header />
 
         <div style={{ flex: 1, maxWidth: 900, margin: '0 auto', width: '100%', padding: '0 28px 80px' }}>
@@ -905,7 +905,7 @@ export default function AuditApp() {
   // ─── AUDIT SCREEN ───────────────────────────────────────
 
   return (
-    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: C.bg, color: C.black }}>
       <Header />
 
       <div style={{ flex: 1, maxWidth: 1100, margin: '0 auto', width: '100%', padding: '0 28px' }}>

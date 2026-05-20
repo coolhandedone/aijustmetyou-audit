@@ -307,25 +307,25 @@ function generateTextSummary(answers, notes, clientName, businessName, industry,
 // ─── Colors ─────────────────────────────────────────────────
 
 const C = {
-  bg: '#F7F3EA',
-  surface: '#FFFCF5',
-  surfaceBorder: '#CFC6B6',
-  white: '#FFFFFF',
-  black: '#111111',
-  blackSoft: '#25211C',
-  muted: '#4E463D',
-  mutedLight: '#746A5E',
-  divider: '#D8CFBF',
-  accent: '#B8422E',
-  red: '#B8422E',
-  yellow: '#B7791F',
-  green: '#167A5B',
-  redBg: '#FFF1ED',
-  yellowBg: '#FFF7DF',
-  greenBg: '#EAF8F1',
-  redText: '#7F2419',
-  yellowText: '#6B4313',
-  greenText: '#0E563F',
+  bg: '#06070A',
+  surface: '#0D1017',
+  surfaceBorder: '#232A3A',
+  white: '#06070A',
+  black: '#ECE6D8',
+  blackSoft: '#D7DCE8',
+  muted: '#8891A3',
+  mutedLight: '#555E70',
+  divider: '#161C29',
+  accent: '#8B7CFF',
+  red: '#FF756C',
+  yellow: '#F1C85B',
+  green: '#66E7C8',
+  redBg: 'rgba(255,117,108,0.12)',
+  yellowBg: 'rgba(241,200,91,0.12)',
+  greenBg: 'rgba(102,231,200,0.12)',
+  redText: '#FFB4AD',
+  yellowText: '#FFE2A3',
+  greenText: '#A8F6E4',
 };
 
 const LEVEL_DISPLAY = {
@@ -415,7 +415,7 @@ export default function AuditApp() {
 
   const selectStyle = {
     ...inputStyle, cursor: 'pointer',
-    backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%234E463D' stroke-width='1.5' fill='none'/%3E%3C/svg%3E")`,
+    backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238891A3' stroke-width='1.5' fill='none'/%3E%3C/svg%3E")`,
     backgroundRepeat: 'no-repeat', backgroundPosition: 'right 16px center',
   };
 
